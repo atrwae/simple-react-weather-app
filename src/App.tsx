@@ -214,7 +214,7 @@ function NewLocationAvailable(location: Place, setLocation: (place:Place) => voi
 {
     const loadedLocation = localStorage.getItem(LS_KEY_location) ?? "";
 
-    if (loadedLocation != null) {
+    if (loadedLocation != null && loadedLocation != "") {
         const parsedLocation = JSON.parse(loadedLocation);
         if (parsedLocation.id != location.id || parsedLocation.name != location.name
             || parsedLocation.admin1 != location.admin1 || parsedLocation.country != location.country) {
