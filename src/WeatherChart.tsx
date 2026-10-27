@@ -237,15 +237,15 @@ export function WeatherChart({
 }
 
 // ---- Sample data for quick testing (delete once you wire up your own) -----
-export function makeSampleData(hours = 100): HourlyPoint[] {
-    const start = new Date();
-    start.setMinutes(0, 0, 0);
-    return Array.from({ length: hours }, (_, i) => {
-        const t = new Date(start.getTime() + i * 3600_000);
-        const daily = Math.sin(((t.getHours() - 9) / 24) * 2 * Math.PI) * 5;
-        return { time: t.toISOString(), temp: 11 + daily + Math.sin(i / 17) * 2 };
-    });
-}
+//export function makeSampleData(hours = 100): HourlyPoint[] {
+//    const start = new Date();
+//    start.setMinutes(0, 0, 0);
+//    return Array.from({ length: hours }, (_, i) => {
+//        const t = new Date(start.getTime() + i * 3600_000);
+//        const daily = Math.sin(((t.getHours() - 9) / 24) * 2 * Math.PI) * 5;
+//        return { time: t.toISOString(), temp: 11 + daily + Math.sin(i / 17) * 2 };
+//    });
+//}
 
 // Usage:
 // <WeatherChart data={yourHourlyData} />

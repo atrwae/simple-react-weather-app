@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { WeatherChart, makeSampleData, type HourlyPoint } from './WeatherChart.tsx'
+ï»¿import { useState } from 'react'
+import { WeatherChart, type HourlyPoint } from './WeatherChart.tsx'
 import { LocationSearch, type Place } from './LocationSearch.tsx'
 import './App.css'
 
@@ -27,7 +27,7 @@ interface OpenMeteoData
 interface OpenMeteo_HourlyUnits
 {
     time: "iso8601";
-    temperature_2m: "°C";
+    temperature_2m: "Â°C";
 }
 
 interface OpenMeteo_Hourly
@@ -290,33 +290,33 @@ function SetFetchesTracker(newValue: number)
     localStorage.setItem(LS_KEY_fetchesToday, newValue.toString());
 }
 
-async function FetchOpenMeteoData_mockup(): Promise<OpenMeteoData> {
+//async function FetchOpenMeteoData_mockup(): Promise<OpenMeteoData> {
 
-    UpdateFetchesTodayTracker(1);
-    console.log("Sth3 - fetch data");
+//    UpdateFetchesTodayTracker(1);
+//    console.log("Sth3 - fetch data");
 
-    const result: OpenMeteoData =
-    {
-        latitude: 52.23009,
-        longitude: 21.017075,
-        generationtime_ms: 88.19019794464111,
-        utc_offset_seconds: 0,
-        timezone: "GMT",
-        timezone_abbreviation: "GMT",
-        elevation: 113.0,
-        hourly_units:
-        {
-            time: "iso8601",
-            temperature_2m: "°C",
-        },
-        hourly:
-        {
-            time: ['2026-10-15T11:00', '2026-10-15T12:00', '2026-10-15T13:00', '2026-10-15T14:00', '2026-10-15T15:00', '2026-10-15T16:00'],
-            temperature_2m: [3.3, 5.6, 7.7, 9.8, 11.3, 13.1],
-        }
-    };
+//    const result: OpenMeteoData =
+//    {
+//        latitude: 52.23009,
+//        longitude: 21.017075,
+//        generationtime_ms: 88.19019794464111,
+//        utc_offset_seconds: 0,
+//        timezone: "GMT",
+//        timezone_abbreviation: "GMT",
+//        elevation: 113.0,
+//        hourly_units:
+//        {
+//            time: "iso8601",
+//            temperature_2m: "Â°C",
+//        },
+//        hourly:
+//        {
+//            time: ['2026-10-15T11:00', '2026-10-15T12:00', '2026-10-15T13:00', '2026-10-15T14:00', '2026-10-15T15:00', '2026-10-15T16:00'],
+//            temperature_2m: [3.3, 5.6, 7.7, 9.8, 11.3, 13.1],
+//        }
+//    };
 
-    return result;
-}
+//    return result;
+//}
 
 export default App

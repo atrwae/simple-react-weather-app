@@ -3,5 +3,7 @@ import { defineConfig } from 'vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+    plugins: [react()],
+    base: '/simple-react-weather-app/',
+    build: { outDir: 'docs' }
 })
