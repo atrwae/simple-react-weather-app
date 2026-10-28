@@ -1,4 +1,4 @@
-﻿import { useState } from 'react'
+﻿import { useState, useReducer } from 'react'
 import { WeatherChart, type HourlyPoint } from './WeatherChart.tsx'
 import { LocationSearch, type Place } from './LocationSearch.tsx'
 import './App.css'
@@ -10,6 +10,8 @@ const LS_KEY_weatherOMData = "weatherOMData";
 const LS_KEY_location = "weatherLocation";
 
 const MS_IN_DAY = 24 * 3600 * 1000;
+let TOKEN_LIMIT = 100;
+let forceReRender: (() => void);
 
 interface OpenMeteoData
 {
@@ -50,6 +52,8 @@ const defaultLocation: Place =
 
 function App() {
 
+    const [, forceRender] = useReducer((x) => x + 1, 0);
+    forceReRender = forceRender;
     const [weatherOMData, setWeatherOMData] = useState<OpenMeteoData | null>(null);
     const [currentDayNumber, setDayNumber] = useState<number | null>(null);
     const [location, setLocation] = useState<Place>(defaultLocation);
@@ -66,8 +70,28 @@ function App() {
     if (NewLocalOMDataAvailable(lacksCurrentData, weatherUpdateInMS, setWeatherOMData)) return;
     TryFetchNewerData(fetchesTodaySoFar, lacksCurrentData, weatherUpdateInMS, location, setWeatherOMData);
 
+    if (fetchesTodaySoFar > TOKEN_LIMIT)
+    {
+        if (TOKEN_LIMIT == 120)
+        {
+            return (<p style={{ marginTop: '15vh' }}>Osiągnięto limit tokenów.<br />(za często zmieniano lokalizację, odnowią się jutro)</p>);
+        }
+        else
+        {
+            TOKEN_LIMIT = -1;
+            return (
+                <>
+                <p style={{ marginTop: '15vh' }}>Aktywowano rezerwę tokenów.<br />(zużywa je zmiana lokalizacji, odnowią się jutro)</p>
+                    <div style={{ marginTop: '4vh' }}>
+                        <button onClick={() => { TOKEN_LIMIT = 120; forceReRender(); }}>Ok</button>
+                    </div>
+                </>
+            );
+        }
+    }
+
     if (weatherOMData == null)
-        return (<p style={{ marginTop: '15vh' }}>Weather data couldn't be retrieved.</p>);
+        return (<p style={{ marginTop: '15vh' }}>Błąd pobierania danych pogodowych.</p>);
 
     const forecastRowsAmount = Math.max(Math.ceil(25 / Math.floor(screen.width / 250)), 7);
     const [forecasts, forecastsHP, currentHour] = FilterData(currentDayNumber, weatherOMData);
@@ -107,7 +131,10 @@ function App() {
           {showForecasts && (
               <div>
                   <p style={{ marginTop: '1vh' }}>Prognozy: <br /></p>
-                  <div style={{ display: 'grid', gridTemplateRows: `repeat(${forecastRowsAmount}, auto)`, gridAutoFlow: 'column' }}>
+                  <div style={{
+                      display: 'grid', gridTemplateRows: `repeat(${forecastRowsAmount}, auto)`,
+                      gridAutoFlow: 'column', marginBottom: "5vh"
+                  }}>
                       {forecasts}
                   </div>
               </div>
@@ -250,7 +277,7 @@ function TryFetchNewerData(
     setWeatherOMData: (data: OpenMeteoData) => void
 )
 {
-    if (fetchesTodaySoFar < 100 && (lacksCurrentData
+    if (fetchesTodaySoFar < TOKEN_LIMIT && (lacksCurrentData
         || Math.abs(weatherUpdateInMS - Date.now()) > 1000 * 3600 * 3))
         FetchOpenMeteoData(location.latitude, location.longitude).then(x => {
             setWeatherOMData(x);
@@ -281,8 +308,12 @@ export function UpdateFetchesTodayTracker(increment = 0)
         localStorage.setItem(LS_KEY_fetchesTrackerDay, today.toString());
     }
 
-    const loadedValue = localStorage.getItem(LS_KEY_fetchesToday);
-    SetFetchesTracker(parseInt(loadedValue ?? "0") + increment);
+    const loadedValue = parseInt(localStorage.getItem(LS_KEY_fetchesToday) ?? "0");
+    SetFetchesTracker(loadedValue + increment);
+    if (loadedValue <= TOKEN_LIMIT && loadedValue + increment > TOKEN_LIMIT)
+    {
+        forceReRender();
+    }
 }
 
 function SetFetchesTracker(newValue: number)

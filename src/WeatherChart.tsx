@@ -39,6 +39,7 @@ export function WeatherChart({
 }: Props) {
 
     const hourWidth = Math.min((screen.width - 60) / 100 * hourWidthVw, 46);
+    const hideMarkerLabelIfSelectionCloserThan = Math.floor(60 / hourWidth) + 1;
     const [active, setActive] = React.useState(0);
     const i = Math.min(active, data.length - 1); // stays valid when you switch days
 
@@ -167,7 +168,7 @@ export function WeatherChart({
                 {currentHour != -1 && (
                     <>
                         <circle cx={x(nowIndex)} cy={y(data[nowIndex].temp)} r={5} fill={COLORS.nowMarker} />
-                        {Math.abs(active - nowIndex) > 1 && (
+                        {Math.abs(active - nowIndex) >= hideMarkerLabelIfSelectionCloserThan && (
                             <text
                                 x={x(nowIndex)}
                                 y={y(temps[nowIndex]) - 10}
@@ -216,7 +217,7 @@ export function WeatherChart({
                 {[hiIndex, loIndex].map((i, n) => (
                     <g key={n}>
                         <circle cx={x(i)} cy={y(temps[i])} r={3.5} fill={COLORS.bg} stroke={COLORS.line} strokeWidth={2} />
-                        {Math.abs(active-i) > 1 && (
+                        {Math.abs(active - i) >= hideMarkerLabelIfSelectionCloserThan && (
                             <text
                                 x={x(i)}
                                 y={y(temps[i]) + (i === hiIndex ? -10 : 18)}
